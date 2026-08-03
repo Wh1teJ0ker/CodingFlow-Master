@@ -30,6 +30,8 @@
 3. `02-技术设计文档.md`
 4. `03-开发任务清单.md`
 
+此外，**项目根目录必须提供双语 README**（`README.md` 中文主版 + `README_EN.md` 英文版）。README 默认按“轻量仓库入口文档”编写，重点写项目介绍、当前状态、Quick Start、基本验证和必要链接；详细设计、长篇说明和扩展文档优先放到 `docs/`。编写依据见 [`references/README-STANDARD.md`](./references/README-STANDARD.md)，可从 [`assets/project-templates/README.md.template`](./assets/project-templates/README.md.template) 与 [`assets/project-templates/README_EN.md.template`](./assets/project-templates/README_EN.md.template) 复制后填充。
+
 对于大多数小中型项目，这四份文档已足够覆盖：
 - 做什么 / 不做什么
 - 界面和交互怎么表现
@@ -61,6 +63,8 @@ docs/
 ```
 
 **关键规则**：`versions/<ver>/更新日志.md` 的进度表必须与 `handoff/TASK-BOARD.md` 的任务状态保持一致。每个 `versions/<ver>/` 必须同步规划对应的 `qa/versions/<ver>/QA-审计报告.md`；版本完成 / 发布状态只能在该 QA 报告已落盘且结论为 `qa_passed` 后写入。详见 [`06-progress-sync.md`](./06-progress-sync.md) 与 [`07-release-qa-audit.md`](./07-release-qa-audit.md)。
+
+版本文档（`04-版本标准.md`、`versions/<ver>/规划需求.md`、`versions/<ver>/更新日志.md`、`qa/versions/<ver>/QA-审计报告.md`）可从 [`assets/project-templates/release-docs/`](./assets/project-templates/release-docs/) 复制模板后填充。
 
 ## 四份文档的职责边界
 

@@ -1,0 +1,31 @@
+# <VERSION> 更新日志
+
+> 本文件为模板，复制到目标项目 `docs/versions/<ver>/更新日志.md` 后替换占位符并按真实版本填写。
+> 默认也可作为 GitHub Release body 使用，写法保持简洁，重点说明“这个版本是什么”和“更新了什么”。
+
+## 版本摘要
+
+<VERSION_SUMMARY>
+
+## 更新内容
+
+### 新增
+
+- <ADDED_ITEM_1>
+
+### 修复
+
+- <FIXED_ITEM_1>
+
+### 调整
+
+- <CHANGED_ITEM_1>
+
+## 当前状态
+
+| 项 | 值 |
+|---|---|
+| 版本号 | <VERSION> |
+| 当前状态 | <STATUS> |
+| 发布日期 | <DATE_OR_UNRELEASED> |
+| 公开 Release | <RELEASE_URL_OR_NONE> |

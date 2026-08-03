@@ -39,6 +39,8 @@ description: 主会话用规划与调度规范。负责把用户需求拆成可�
 ```text
 orchestrator-workflow/
 ├── SKILL.md                    # 总入口：角色边界、状态机、流程总览、目录/文档约定
+├── README.md                   # skill 维护说明（中文主版）
+├── README_EN.md                # skill 维护说明（英文版）
 ├── 00-doc-planning.md          # 项目 docs 体系规划与版本化文档规则
 ├── 01-task-decomposition.md    # Phase 1：拆任务 DAG，生成 TASK-BOARD 与 HANDOFF
 ├── 02-dispatch-and-verify.md   # Phase 2-6：分派、回报、review、单任务闭环
@@ -46,8 +48,42 @@ orchestrator-workflow/
 ├── 04-coder-spec.md            # Coder 子 Agent 单任务实施规范
 ├── 05-reviewer-spec.md         # Reviewer 子 Agent 单任务审查规范
 ├── 06-progress-sync.md         # docs / versions / handoff 的进度同步规则
-└── 07-release-qa-audit.md      # Phase 8：版本发布前全局 QA 审计与报告规则
+├── 07-release-qa-audit.md      # Phase 8：版本发布前全局 QA 审计与报告规则
+├── references/                 # 规范层：定义“必须满足什么”
+│   ├── README-STANDARD.md          # 目标项目双语 README 规范
+│   ├── GITHUB-ACTIONS-STANDARD.md  # GitHub Actions 通用规范
+│   ├── RELEASE-STANDARD.md         # Release 通用规范
+│   ├── RUST-TAURI.md               # Rust + Tauri 技术栈参考
+│   └── GO-WAILS.md                 # Go + Wails 技术栈参考
+├── assets/project-templates/   # 模板层：通用可复制工件，定义“从哪里开始”
+│   ├── README.md.template          # 中文主版 README 模板
+│   ├── README_EN.md.template       # 英文版 README 模板
+│   ├── rust-tauri/                 # Rust+Tauri CI/Release workflow + 配置模板
+│   ├── go-wails/                   # Go+Wails CI/Release workflow + 配置模板
+│   └── release-docs/               # 版本标准/规划/更新日志/QA 报告模板
+├── examples/                   # 实例层：已填充但非权威，解释“如何适配”
+│   ├── README.md                   # 实例总说明（声明非权威）
+│   ├── rust-tauri/                 # Rust+Tauri 工作流填充实例
+│   ├── go-wails/                   # Go+Wails 工作流填充实例
+│   └── release/                    # Release QA 三种闭环实例（qa_passed/qa_failed/blocked）
+├── scripts/                    # 维护工具
+│   └── validate_skill_resources.py # 资源自检脚本
+└── handoff/                    # 临时交接文件：只服务当前执行闭环（见下）
 ```
+
+### 资源分层权威性
+
+本 skill 的工程资源分三层，职责不可混用：
+
+| 层 | 路径 | 性质 | 权威性 |
+|---|---|---|---|
+| 规范 | `references/` | 定义“必须满足什么” | 权威，评审依据 |
+| 模板 | `assets/project-templates/` | 通用可复制结构，定义“从哪里开始” | 权威起点，复制后替换占位符 |
+| 实例 | `examples/` | 已填充但非权威，解释“如何适配” | 非权威，仅说明，不替代规范 |
+
+主会话在为目标项目建立 CI/Release/README/版本文档时，应优先从模板复制并按规范填充；实例仅用于理解，不可直接当作规范使用。维护本 skill 时运行 `python3 scripts/validate_skill_resources.py` 自检资源完整性。
+
+`handoff/` 不属于上述三层长期资源库，它是执行期临时工件目录。若 skill 仓库中暂时保留 handoff 快照用于说明当前闭环状态，该快照也必须自洽、不得违反 Release QA 门禁、不得引用不存在的关键交接文件。
 
 目标项目中的文档与交接产物分为三层：
 
@@ -174,6 +210,8 @@ Phase 9  QA 通过后同步版本状态 → release_complete → 清理 TASK-BOA
 
 - 永远先拆任务 DAG，再分派；不要边做边想任务
 - 任务粒度按"可独立验收的垂直切片"，不按文件/层级
+- commit 粒度按"单一逻辑目的"：一个 commit 只做一种变更，避免把功能、重构、格式化、无关文档混在一起
+- commit message 默认使用 Conventional Commits：`type(scope): subject`
 - 没看到落盘 REPORT / REVIEW 文件就不下结论
 - `verified_complete` 最终判定权在本 skill，coder/reviewer 都只是输入
 - `done_e2e` 必须跑端到端验收，不能因为单任务全过就跳过

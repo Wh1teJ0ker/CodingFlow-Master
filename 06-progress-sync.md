@@ -29,7 +29,8 @@
 在 [`03-e2e-acceptance.md`](./03-e2e-acceptance.md) Phase 7 判定 `done_e2e` 后，还必须先执行 [`07-release-qa-audit.md`](./07-release-qa-audit.md)。只有 `docs/qa/versions/<ver>/QA-审计报告.md` 已生成且结论为 `qa_passed` 后，才允许同步版本级完成 / 发布状态：
 
 1. 更新 `docs/versions/<ver>/更新日志.md`：
-   - 顶部状态从 `🔲 待发布` 改为 `✅ 已发布`（或 `已完成`）
+   - 若仅完成 QA 审计且尚未 finalize / 同步完全部版本状态，顶部状态改为 `✅ 已通过 QA`
+   - 仅当 finalize 成功且版本文档同步完成后，顶部状态才改为 `✅ 已发布`
    - 填写验收记录段，并引用 `docs/qa/versions/<ver>/QA-审计报告.md`
    - 补充已知问题（如有）
 2. 更新 `docs/04-版本标准.md`：
@@ -64,8 +65,11 @@
 
 | 标记 | 含义 |
 |------|------|
-| `🔲 待发布` | 版本未开始或进行中 |
-| `✅ 已发布` | 版本 done_e2e 且 Release QA `qa_passed` |
+| `🔲 待发布` | 版本未开始、进行中，或尚未完成 Release QA |
+| `✅ 已通过 QA` | Release QA 已 `qa_passed`，允许进入 finalize / 发布同步 |
+| `✅ 已发布` | `release_complete`，即 finalize 成功且版本文档同步完成 |
+
+> 状态边界说明：`qa_passed` 仅表示 Release QA 审计通过、**允许**进入发布同步；`release_complete` 表示 finalize 成功且版本文档同步已实际完成。只有 `release_complete` 才代表真正发布完成。详见 [`references/RELEASE-STANDARD.md`](./references/RELEASE-STANDARD.md) 与 [`07-release-qa-audit.md`](./07-release-qa-audit.md)。版本更新日志与 QA 报告可从 [`assets/project-templates/release-docs/`](./assets/project-templates/release-docs/) 复制模板填充；三种闭环场景（`qa_passed` / `qa_failed` / `blocked`）的正确处理见 [`examples/release/`](./examples/release/)。
 
 ## 同步检查清单
 
@@ -73,7 +77,8 @@
 
 - [ ] `docs/versions/<ver>/更新日志.md` 进度表与 `handoff/TASK-BOARD.md`（或实际代码）状态一致
 - [ ] 已 `verified_complete` 的任务在更新日志中标 `✅ 已完成`
-- [ ] 已 `done_e2e` 且 QA `qa_passed` 的版本在更新日志顶部标 `✅ 已发布`
+- [ ] 已 `qa_passed` 但尚未 finalize 的版本在更新日志顶部标 `✅ 已通过 QA`
+- [ ] 已 `release_complete` 的版本在更新日志顶部标 `✅ 已发布`
 - [ ] 对应 QA 报告存在于 `docs/qa/versions/<ver>/QA-审计报告.md` 且结论为 `qa_passed`
 - [ ] 已通过验收的任务 handoff 三件套已删除
 - [ ] 已 QA 通过并同步版本状态的 `handoff/TASK-BOARD.md` 已删除

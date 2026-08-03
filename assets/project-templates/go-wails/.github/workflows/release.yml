@@ -1,0 +1,266 @@
+name: Release
+
+# 模板变量见同目录 TEMPLATE-VARIABLES.md。
+# 复制到目标项目后替换所有 <REPLACE:...> 占位符为真实值。
+# 发布门禁顺序：版本校验 -> QA 状态校验 -> draft -> 三平台构建 -> checksums -> finalize
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: Validate version and release gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid semver tag: $TAG"
+            exit 1
+          fi
+          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Verify version matches wails.json
+        run: |
+          EXPECTED="${{ steps.version.outputs.version }}"
+          ACTUAL=$(jq -r '.info.productVersion // empty' wails.json)
+          if [[ -z "$ACTUAL" ]]; then
+            echo "wails.json missing info.productVersion"
+            exit 1
+          fi
+          if [[ "$ACTUAL" != "$EXPECTED" ]]; then
+            echo "Version mismatch: tag=$EXPECTED wails.json=$ACTUAL"
+            exit 1
+          fi
+
+      - name: Verify Release QA passed
+        run: |
+          REPORT="docs/qa/versions/${{ steps.version.outputs.version }}/QA-审计报告.md"
+          if [[ ! -f "$REPORT" ]]; then
+            echo "Missing Release QA report: $REPORT"
+            exit 1
+          fi
+          if ! grep -q "qa_passed" "$REPORT"; then
+            echo "Release QA report does not conclude qa_passed: $REPORT"
+            exit 1
+          fi
+
+  create-release:
+    name: Create draft Release
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    outputs:
+      release_id: ${{ steps.create.outputs.id }}
+      version: ${{ needs.validate.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create draft GitHub Release
+        id: create
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          # 更新日志路径：版本号由 validate job 注入，不写死具体版本
+          body_path: "docs/versions/${{ needs.validate.outputs.version }}/更新日志.md"
+          draft: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build:
+    name: Build & upload (${{ matrix.label }})
+    needs: create-release
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            label: linux-amd64
+          - os: windows-latest
+            label: windows-amd64
+          - os: macos-latest
+            label: macos-universal
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "<REPLACE:NODE_VERSION>"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Linux system dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            pkg-config \
+            libgtk-3-dev \
+            "<REPLACE:WEBKIT_PACKAGE>"
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Install Wails CLI
+        run: go install github.com/wailsapp/wails/v2/cmd/wails@"<REPLACE:WAILS_VERSION>"
+
+      - name: Build with ldflags version injection
+        shell: bash
+        run: |
+          VERSION="${{ needs.create-release.outputs.version }}"
+          COMMIT="${{ github.sha }}"
+          BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          LDFLAGS="-X <REPLACE:GO_MODULE_PATH>/internal/buildinfo.Version=${VERSION} \
+                   -X <REPLACE:GO_MODULE_PATH>/internal/buildinfo.Commit=${COMMIT} \
+                   -X <REPLACE:GO_MODULE_PATH>/internal/buildinfo.BuildDate=${BUILD_DATE}"
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            wails build -platform windows/amd64 -ldflags "${LDFLAGS}"
+          elif [[ "${{ runner.os }}" == "macOS" ]]; then
+            wails build -platform darwin/universal -ldflags "${LDFLAGS}"
+          else
+            wails build -platform linux/amd64 -ldflags "${LDFLAGS}"
+          fi
+
+      - name: Verify artifact exists
+        shell: bash
+        run: |
+          # Wails 产物默认在 build/bin/ 下
+          if ! ls build/bin/* 2>/dev/null | grep -q .; then
+            echo "No build artifacts found in build/bin/"
+            exit 1
+          fi
+          ls -la build/bin/
+
+      - name: Archive artifacts (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          VERSION="${{ needs.create-release.outputs.version }}"
+          PROJECT="<REPLACE:PROJECT_NAME>"
+          cd build/bin
+          tar -czf "../../${PROJECT}_${VERSION}_linux_amd64.tar.gz" *
+
+      - name: Archive artifacts (Windows)
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          VERSION="${{ needs.create-release.outputs.version }}"
+          PROJECT="<REPLACE:PROJECT_NAME>"
+          cd build/bin
+          7z a "../../${PROJECT}_${VERSION}_windows_amd64.zip" *
+
+      - name: Archive artifacts (macOS)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          VERSION="${{ needs.create-release.outputs.version }}"
+          PROJECT="<REPLACE:PROJECT_NAME>"
+          cd build/bin
+          # macOS .app 使用 ditto 归档，保留权限与目录结构
+          shopt -s nullglob
+          APP_FILES=(*.app)
+          shopt -u nullglob
+          if [[ ${#APP_FILES[@]} -eq 1 ]]; then
+            ditto -c -k --keepParent "${APP_FILES[0]}" "../../${PROJECT}_${VERSION}_macos_universal.zip"
+          else
+            7z a "../../${PROJECT}_${VERSION}_macos_universal.zip" *
+          fi
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: wails-bundle-${{ matrix.label }}
+          path: |
+            *_linux_amd64.tar.gz
+            *_windows_amd64.zip
+            *_macos_universal.zip
+          if-no-files-found: error
+
+  checksums:
+    name: Generate SHA-256 checksums
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all bundle artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          pattern: wails-bundle-*
+          merge-multiple: true
+
+      - name: Verify artifacts exist
+        run: |
+          find artifacts -type f \( -name '*.tar.gz' -o -name '*.zip' \) -print
+          if ! find artifacts -type f \( -name '*.tar.gz' -o -name '*.zip' \) | grep -q .; then
+            echo "No release artifacts found"
+            exit 1
+          fi
+
+      - name: Generate checksums
+        working-directory: artifacts
+        run: |
+          find . -type f \( -name '*.tar.gz' -o -name '*.zip' \) -exec sha256sum {} \; | sed 's|  \./|  |' > checksums.txt
+          cat checksums.txt
+
+      - name: Upload checksums to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: artifacts/checksums.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  finalize:
+    name: Finalize release
+    needs: [validate, create-release, build, checksums]
+    if: ${{ needs.validate.result == 'success' && needs.create-release.result == 'success' && needs.build.result == 'success' && needs.checksums.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Publish completed release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          args=(release edit "$TAG_NAME" --draft=false)
+          if [[ "$TAG_NAME" != *-* ]]; then
+            args+=(--latest)
+          fi
+          gh "${args[@]}"

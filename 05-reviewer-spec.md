@@ -37,7 +37,12 @@ Reviewer 子 Agent 只负责「审查 + 退回意见」，不负责写业务实�
 - 若文档仍比代码更乐观，应退回。
 - `handoff/` 下的交接文件是否仍存在且未被 coder 自行删除。
 
-**5. 风险核对**：是否引入明显回归风险；是否遗漏关键边界条件；是否缺错误处理；是否存在关键测试缺口。
+**5. commit 核对**：
+- commit 是否保持单一逻辑目的。
+- commit message 是否使用 Conventional Commits，或至少达到同等清晰度。
+- 是否夹带无关格式化、无关重构、无关文档噪音改动。
+
+**6. 风险核对**：是否引入明显回归风险；是否遗漏关键边界条件；是否缺错误处理；是否存在关键测试缺口。
 
 注意：本审查只覆盖当前任务切片。Reviewer 不生成 `docs/qa/versions/<ver>/QA-审计报告.md`，也不判定版本是否可发布；版本级全局审计由主会话按 [`07-release-qa-audit.md`](./07-release-qa-audit.md) 执行。
 
@@ -46,18 +51,15 @@ Reviewer 子 Agent 只负责「审查 + 退回意见」，不负责写业务实�
 必须写入 `handoff/TASK-<id>-REVIEW.md`，固定结构：
 
 ```yaml
-verdict:
-  - review_passed | review_rejected | blocked
+verdict: review_passed | review_rejected | blocked
 defects:
   - severity: critical | major | minor
     file: path:line
     issue: 问题是什么
     impact: 会导致什么后果
     fix: coder 下一步该怎么改
-scope_check:
-  - 是否越界；如越界，列出位置和原因
-docs_check:
-  - 文档是否已同步；若未同步，列出缺口
+scope_check: none | 列出越界位置和原因
+docs_check: synced | 列出未同步的文档缺口
 ```
 
 ## 5.5 判定规则

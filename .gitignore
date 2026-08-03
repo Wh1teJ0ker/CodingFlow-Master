@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node / Python helpers (local tooling, not skill resources)
+__pycache__/
+*.pyc
+node_modules/
+
+# Local handoff workspace snapshots (execution-time, not tracked)
+handoff/*
+!handoff/.gitkeep

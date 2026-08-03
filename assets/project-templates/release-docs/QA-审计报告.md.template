@@ -1,0 +1,41 @@
+# <VERSION> Release QA 审计报告
+
+> 本文件为模板，复制到目标项目 `docs/qa/versions/<ver>/QA-审计报告.md` 后替换占位符并按真实版本填写。
+> 本报告是版本级发布门禁文档，不是对外 Release 文案。保持事实清晰即可，不要求冗长。
+
+## 审计范围
+
+- 版本号：<VERSION>
+- 审计日期：<AUDIT_DATE>
+- 审计人：<AUDITOR>
+- 审计基线提交：<COMMIT_SHA>
+
+## 证据核对
+
+| 检查项 | 期望 | 实际证据 | 结论 |
+|---|---|---|---|
+| 所有任务 verified_complete | TASK-BOARD 全部 verified_complete | <EVIDENCE> | <PASS_OR_FAIL> |
+| 端到端集成验收 | done_e2e | <EVIDENCE> | <PASS_OR_FAIL> |
+| 版本文档同步 | 更新日志已更新 | <EVIDENCE> | <PASS_OR_FAIL> |
+| 版本一致性 | tag / 版本源 / 文档目录一致 | <EVIDENCE> | <PASS_OR_FAIL> |
+| CI / 构建 | 关键验证通过 | <EVIDENCE> | <PASS_OR_FAIL> |
+| 发布产物 | 产物存在且可核对 | <EVIDENCE> | <PASS_OR_FAIL> |
+
+## 发现的问题
+
+| 编号 | 严重度 | 描述 | 状态 |
+|---|---|---|---|
+| <ID> | <critical/major/minor> | <DESCRIPTION> | <open/resolved> |
+
+## 审计结论
+
+| 项 | 值 |
+|---|---|
+| 结论 | <qa_passed / qa_failed / blocked> |
+| 阻塞问题数 | <COUNT> |
+| 是否允许发布 | <YES_OR_NO> |
+| 后续 | <NEXT_ACTION> |
+
+> `qa_passed`：无 critical/major 未解决问题，允许进入发布同步与 finalize。
+> `qa_failed`：存在 critical/major 问题，需回流新 HANDOFF 修复，版本保持未发布。
+> `blocked`：缺少关键证据、签名凭据或环境能力，禁止发布。

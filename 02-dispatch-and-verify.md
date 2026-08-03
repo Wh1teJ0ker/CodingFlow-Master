@@ -72,8 +72,9 @@
 1. `verdict: review_passed`
 2. `defects` 为空
 3. coder `verification_commands` 全绿（看输出，不看"说跑过"）
-4. **下游未被破坏**：若该任务的改动可能影响已 `verified_complete` 的下游任务，重跑下游的 `verification_commands`；有失败 → 下游回 `not_complete`，本任务也回 `not_complete`
-5. 文档已同步（reviewer 核过）
+4. commit 粒度与 message 基本符合规范：单一逻辑目的，且 message 使用 Conventional Commits 或 reviewer 明确接受的等价清晰写法
+5. **下游未被破坏**：若该任务的改动可能影响已 `verified_complete` 的下游任务，重跑下游的 `verification_commands`；有失败 → 下游回 `not_complete`，本任务也回 `not_complete`
+6. 文档已同步（reviewer 核过）
 
 否则 → `not_complete`：
 - `review_rejected` → 把 `defects` 合并进 HANDOFF（追加到 `acceptance_criteria` 或 `risks`），重新派 coder（回 Phase 2，**不另起新任务 id**）

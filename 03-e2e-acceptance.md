@@ -22,12 +22,12 @@
 ```yaml
 e2e_verification:
   - pnpm install --frozen-lockfile=false
-  - pnpm tauri build --debug 2>&1 | tail -5  # 整体可构建
+  - pnpm tauri build --debug  # 整体可构建，保留完整输出或可审计日志
   - pnpm test  # 全量单元测试绿
-  - pnpm tauri dev &  # 启动后人工走 happy path
+  - pnpm tauri dev  # 前台启动后人工走 happy path，并记录停止方式与关键观察
 ```
 
-看命令输出，失败就如实报。关键命令未跑不能宣称 `done_e2e`。
+看命令输出，失败就如实报。关键命令未跑不能宣称 `done_e2e`。不要为“看起来简洁”而截断关键输出，也不要把需要人工终止的验证命令静默放到后台执行。
 
 ### Step 3 — 判定
 

@@ -1,0 +1,44 @@
+# <VERSION> 规划需求
+
+> 本文件为模板，复制到目标项目 `docs/versions/<ver>/规划需求.md` 后替换占位符并按真实版本填写。
+
+## 版本目标
+
+<VERSION_GOAL>
+
+## 范围
+
+### 包含
+
+- <SCOPE_ITEM_1>
+- <SCOPE_ITEM_2>
+
+### 不包含
+
+- <NON_SCOPE_ITEM_1>
+
+## 任务清单
+
+> 与 `handoff/TASK-BOARD.md` 对齐；状态以 TASK-BOARD 为准。
+
+| 任务 | 描述 | 依赖 | 验收方式 |
+|---|---|---|---|
+| <TASK_ID> | <TASK_DESCRIPTION> | <DEPENDS_ON> | <ACCEPTANCE> |
+
+## 验收标准
+
+- <ACCEPTANCE_CRITERION_1>
+- <ACCEPTANCE_CRITERION_2>
+
+## 风险
+
+- <RISK_1>
+
+## 版本状态
+
+| 项 | 值 |
+|---|---|
+| 版本号 | <VERSION> |
+| 当前状态 | <STATUS> |
+| E2E 验收 | <DONE_OR_NOT> |
+| Release QA | <QA_STATUS> |

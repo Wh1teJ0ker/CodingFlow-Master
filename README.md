@@ -1,3 +1,48 @@
-# orchestrator-workflow
+# Orchestrator Workflow 维护说明
 
-Personal skill notes and workflow docs for orchestration-style task execution.
+[English](./README_EN.md)
+
+本目录维护一套面向主会话、Coder、Reviewer 与 Release QA 的协作工作流。本文只说明维护入口、内容分层与变更约束；实际执行规则以 `SKILL.md` 及其引用的过程文件为准。
+
+## 内容分层
+
+本目录中的 README 相关内容分为三层，职责不可混用：
+
+1. **维护说明**：`README.md` 与 `README_EN.md`
+   - 面向维护本 skill 的贡献者。
+   - 说明目录入口、规范位置、模板位置和维护检查项。
+   - 不替代 `SKILL.md`，也不承载项目实例。
+2. **项目 README 规范**：`references/README-STANDARD.md`
+   - 定义目标项目 README 的必备结构、双语互链、状态表述和质量要求。
+   - 作为评审项目 README 时的统一依据。
+3. **可复制模板**：`assets/project-templates/README.md.template` 与 `assets/project-templates/README_EN.md.template`
+   - 分别是中文主版和英文版模板。
+   - 仅包含通用占位符，不绑定具体项目。
+   - 复制到目标项目后，应替换全部占位符并删除不适用的可选提示。
+
+## 使用方式
+
+1. 先阅读 [`references/README-STANDARD.md`](./references/README-STANDARD.md)，确认项目的真实状态、受众和发布方式。
+2. 将中文模板复制为目标项目根目录的 `README.md`。
+3. 将英文模板复制为目标项目根目录的 `README_EN.md`。
+4. 同步填写两个版本，保持标题层级、事实、命令和链接对应。
+5. 检查顶部语言互链，确保用户可在中文主版与英文版之间切换。
+6. 运行项目实际支持的安装、验证和构建命令后再写入 README；未验证或未发布的能力必须明确标注。
+
+## 维护原则
+
+- 中文 `README.md` 是目标项目主版，英文 `README_EN.md` 是对应翻译版；两者必须互链。
+- 规范定义“必须满足什么”，模板提供“可以从哪里开始”，项目实例记录“当前真实情况”。
+- 模板不能声称功能、构建产物或发布渠道已经可用。
+- 示例命令必须可替换；不得把维护环境中的用户名、绝对路径、仓库名或凭据写入模板。
+- 中英文模板新增、删除或重排章节时必须同步修改。
+- 隐私、安全、限制和平台差异应明确披露，不使用模糊的营销语言代替事实。
+
+## 维护检查清单
+
+- [ ] `README.md` 与 `README_EN.md` 顶部互链有效。
+- [ ] 规范覆盖项目介绍、当前状态、Quick Start、基本验证、必要链接五大必需部分。
+- [ ] 两个模板章节一一对应。
+- [ ] 模板只使用通用占位符。
+- [ ] Quick Start 命令可在干净环境复现；发布和下载链接真实存在。
+- [ ] 中英文事实一致，不含凭据、私有地址或项目外身份信息。

@@ -45,13 +45,19 @@ Coder 子 Agent 只负责「执行 + 自验 + 回报」，不负责审查 / 出�
 - 关键命令未跑，不能给 `verified_complete`
 - 无法运行的命令，明确写出"未运行"和原因
 
-**Step 4 — 同步文档**：
+**Step 4 — commit 整理**：
+- 每次 commit 只做一个逻辑目的
+- 默认使用 Conventional Commits：`type(scope): subject`
+- 常用类型：`feat`、`fix`、`docs`、`refactor`、`test`、`ci`、`build`、`chore`
+- 不把无关格式化、无关重构、无关文档混入同一个 commit
+
+**Step 5 — 同步文档**：
 - 如果真实行为 / 用法 / 工作流 / 当前限制发生变化，同步更新 `docs/` 下相关文档
 - 只写真实当前状态，修正过期描述
 - 不把样机逻辑写成完成态
 - 文档分两类：`docs/` 为永久产品文档（改了行为要同步），`handoff/` 为临时交接文件（任务通过验收后由主会话删除，你不要自行删除）
 
-**Step 5 — 写任务报告**：
+**Step 6 — 写任务报告**：
 
 必须写入 `handoff/TASK-<id>-REPORT.md`，固定结构：
 
@@ -64,6 +70,8 @@ verification_results:
   - 每条命令的通过 / 失败 / 关键输出摘要
 docs_updated:
   - 是否更新文档；若更新，列出文件
+commit_summary:
+  - 本任务涉及的 commit 摘要（可写 message，或写 none）
 reported_status:
   - implemented_not_verified | partially_complete | blocked | verified_complete
 scope_deviation:

@@ -11,7 +11,7 @@
 只要本次工作涉及以下任一动作，就必须先完成本流程：
 - 将 `docs/versions/<ver>/更新日志.md` 顶部状态改为 `已完成` / `已发布` / 等价完成态。
 - 更新 `docs/04-版本标准.md` 中对应版本的完成日期、发布状态或里程碑状态。
-- 生成 release note、版本交付说明、版本总结，或向用户宣称该版本可交付。
+- 生成简洁 release note、版本交付说明、版本总结，或向用户宣称该版本可交付。
 - 用户要求“版本更新”“发布前检查”“全局审计”“QA 文档”“验收报告”。
 
 ## QA 文档路径规则（与版本目录同步）
@@ -91,41 +91,28 @@ pnpm tauri build / pnpm tauri dev
 ```markdown
 # <ver> QA 审计报告
 
-## 1. 审计元信息
+## 1. 审计范围
 - 版本：<ver>
 - 审计时间：YYYY-MM-DD HH:mm
-- 审计人：ZCode Orchestrator
-- 关联版本文档：docs/versions/<ver>/...
+- 审计人：...
 - 审计结论：qa_passed | qa_failed | blocked
 
-## 2. 发布门禁结论
+## 2. 证据核对
+| 检查项 | 期望 | 实际证据 | 结论 |
+|------|------|----------|------|
+
+## 3. 发现的问题
+| 严重级别 | 问题 | 状态 |
+|----------|------|------|
+
+## 4. 审计结论
 - 是否允许标记版本完成 / 发布：是 / 否
-- 阻塞项数量：critical X / major Y / minor Z
-- 必须修复后重审的问题：...
-
-## 3. 验证命令记录
-| 命令 | 结果 | 关键输出 / 失败原因 |
-|------|------|--------------------|
-
-## 4. 审计矩阵
-| 维度 | 结论 | 证据 | 风险 |
-|------|------|------|------|
-
-## 5. 发现的问题
-| 严重级别 | 文件/位置 | 问题 | 影响 | 建议修复 |
-|----------|-----------|------|------|----------|
-
-## 6. 文档一致性检查
-- 版本规划与实现差异：...
-- 更新日志与真实状态差异：...
-- 需要修正的文档：...
-
-## 7. 已知限制与后续建议
-- ...
-
-## 8. 审计历史
-- YYYY-MM-DD HH:mm：qa_failed / qa_passed / blocked，摘要...
+- 后续动作：...
 ```
+
+> QA 报告与版本文档模板可从 [`assets/project-templates/release-docs/`](./assets/project-templates/release-docs/) 复制（`QA-审计报告.md.template`、`04-版本标准.md.template`、`规划需求.md.template`、`更新日志.md.template`）。三种闭环场景（`qa_passed` / `qa_failed` / `blocked`）的正确处理顺序与证据形态见 [`examples/release/`](./examples/release/) 非权威实例。Release 工程规范（SemVer、唯一版本源、draft/finalize、checksums、签名）见 [`references/RELEASE-STANDARD.md`](./references/RELEASE-STANDARD.md)；GitHub Actions 门禁与状态语义见 [`references/GITHUB-ACTIONS-STANDARD.md`](./references/GITHUB-ACTIONS-STANDARD.md)。
+>
+> 注意：Actions workflow 的 CI 通过或产物构建成功只是自动化证据，不能替代本审计报告。对外更新日志可以简洁，但本 QA 报告仍必须足够支持 `qa_passed` / `qa_failed` / `blocked` 的结论。
 
 ## 判定规则
 
