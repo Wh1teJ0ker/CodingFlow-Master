@@ -1,0 +1,15 @@
+{
+  "name": "codingflow-master",
+  "description": "Orchestrator workflow plugin with hook-enforced gates for ZCode",
+  "plugins": [
+    {
+      "name": "codingflow-master",
+      "source": "./",
+      "description": "Orchestrator workflow plugin with hook-enforced gates for ZCode. Plans, delegates, reviews, and releases with mandatory QA gates.",
+      "version": "2.0.0",
+      "category": "workflow",
+      "tags": ["orchestrator", "workflow", "qa", "hooks", "agents"],
+      "strict": true
+    }
+  ]
+}
