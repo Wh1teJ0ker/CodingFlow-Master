@@ -31,10 +31,9 @@ Core hook interceptions: `git tag` requires a `qa_passed` QA report; `git commit
 
 ```bash
 git clone https://github.com/Wh1teJ0ker/CodingFlow-Master.git ~/.zcode/cli/plugins/codingflow-master
-bash ~/.zcode/cli/plugins/codingflow-master/scripts/setup.sh
 ```
 
-`setup.sh` syncs skill files to `~/.agents/skills/orchestrator-workflow/` and installs coder / reviewer sub-agent definitions to `~/.zcode/agents/`. Idempotent, safe to re-run.
+In ZCode client Settings → Plugins, add the local directory. The plugin auto-loads all components (agents / commands / hooks / skills).
 
 ## Usage
 
@@ -73,7 +72,7 @@ CodingFlow-Master/
 │   └── references/               # Standards (CODE / RELEASE / CI / README)
 ├── commands/                     # plan.md / audit.md / tag.md
 ├── assets/templates/             # Target project doc templates (7 files)
-└── scripts/setup.sh             # Sub-agent auto-configure script
+└── README.md
 ```
 
 ## License

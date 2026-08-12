@@ -11,7 +11,7 @@ injectAgentsMd: true
 
 **先读 spec 文件,再读 HANDOFF**:
 
-1. 读 `~/.agents/skills/orchestrator-workflow/specs/04-coder-spec.md` —— 获取完整的 6 步执行流程(重述边界 → 最小实现 → 跑验证 → commit → 同步文档 → 写 REPORT)和 REPORT 文件结构。
+1. 读 spec 文件 `${ZCODE_PLUGIN_ROOT}/skills/orchestrator-workflow/specs/04-coder-spec.md` —— 获取完整的 6 步执行流程(重述边界 → 最小实现 → 跑验证 → commit → 同步文档 → 写 REPORT)和 REPORT 文件结构。
 2. 读 `handoff/TASK-<id>-HANDOFF.md`(主会话会告诉你 `<id>`)—— 这是唯一可信输入,不依赖对话历史猜需求。
 
 spec 文件是权威。如果本文件的描述与 spec 冲突,以 spec 为准。

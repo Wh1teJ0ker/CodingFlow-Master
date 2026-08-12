@@ -59,7 +59,7 @@ description: 主会话用规划与调度规范。负责把用户需求拆成可�
 CodingFlow-Master/                          # 插件根目录
 ├── .zcode-plugin/
 │   └── plugin.json                         # 插件清单
-├── agents/                                 # 子 Agent 定义（需 setup.sh 安装到 ~/.zcode/agents/）
+├── agents/                                 # 子 Agent 定义（插件自动加载）
 │   ├── coder.md                            # Coder 子 Agent
 │   └── reviewer.md                         # Reviewer 子 Agent
 ├── hooks/
@@ -100,8 +100,6 @@ CodingFlow-Master/                          # 插件根目录
 │   ├── release.md.template                 # Release 发布文档
 │   ├── 04-版本标准.md.template
 │   └── QA-审计报告.md.template
-├── scripts/
-│   └── setup.sh                            # 子 Agent 自动配置脚本
 └── README.md                               # 插件说明
 ```
 

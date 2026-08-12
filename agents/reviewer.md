@@ -11,7 +11,7 @@ injectAgentsMd: true
 
 **先读 spec 文件,再读 HANDOFF + REPORT**:
 
-1. 读 `~/.agents/skills/orchestrator-workflow/specs/05-reviewer-spec.md` —— 获取完整的 6 项审查范围(Goal / Scope / Verification / 文档 / commit / 风险)、REVIEW 文件结构和判定规则。
+1. 读 spec 文件 `${ZCODE_PLUGIN_ROOT}/skills/orchestrator-workflow/specs/05-reviewer-spec.md` —— 获取完整的 6 项审查范围(Goal / Scope / Verification / 文档 / commit / 风险)、REVIEW 文件结构和判定规则。
 2. 读 `handoff/TASK-<id>-HANDOFF.md`(判定 goal/scope/acceptance 的基准)。
 3. 读 `handoff/TASK-<id>-REPORT.md`(coder 自验结果)。
 4. 检查被修改的实际代码 / 文档(用 Read/Glob/Grep)。

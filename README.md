@@ -31,10 +31,9 @@ Hook 核心拦截：`git tag` 必须有 `qa_passed` 的 QA 报告；`git commit`
 
 ```bash
 git clone https://github.com/Wh1teJ0ker/CodingFlow-Master.git ~/.zcode/cli/plugins/codingflow-master
-bash ~/.zcode/cli/plugins/codingflow-master/scripts/setup.sh
 ```
 
-`setup.sh` 会同步 skill 文件到 `~/.agents/skills/orchestrator-workflow/`，安装 coder / reviewer 子 Agent 定义到 `~/.zcode/agents/`。幂等，可安全重复运行。
+在 ZCode 客户端 Settings → Plugins 中添加本地目录，插件自动加载（含 agents / commands / hooks / skills 全部组件）。
 
 ## 使用
 
@@ -73,7 +72,7 @@ CodingFlow-Master/
 │   └── references/               # 标准规范（CODE / RELEASE / CI / README）
 ├── commands/                     # plan.md / audit.md / tag.md
 ├── assets/templates/             # 目标项目文档模板（7 个）
-└── scripts/setup.sh             # 子 Agent 自动配置脚本
+└── README.md
 ```
 
 ## License
