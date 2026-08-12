@@ -61,17 +61,21 @@ Phase 8  【仅当 /tag 显式触发】Release QA → qa_passed → tag + releas
 
 ```
 CodingFlow-Master/
-├── .zcode-plugin/plugin.json     # 插件清单
-├── agents/                       # 子 Agent 定义（coder.md / reviewer.md）
-├── hooks/                        # hooks.json + scripts/（4 个 hook 脚本）
-├── skills/orchestrator-workflow/
-│   ├── SKILL.md                  # Skill 总入口
-│   ├── phases/                   # Phase 流程文件（00-03, 07）
-│   ├── specs/                    # 子 Agent 规范（04-coder, 05-reviewer）
-│   ├── sync/                     # 进度同步（06）
-│   └── references/               # 标准规范（CODE / RELEASE / CI / README）
-├── commands/                     # plan.md / audit.md / tag.md
-├── assets/templates/             # 目标项目文档模板（7 个）
+├── marketplace.json              # 插件市场清单
+├── plugins/
+│   └── codingflow-master/
+│       ├── .zcode-plugin/
+│       │   └── plugin.json       # 插件清单
+│       ├── agents/               # 子 Agent 定义（coder.md / reviewer.md）
+│       ├── hooks/                # hooks.json + scripts/（4 个 hook 脚本）
+│       ├── skills/orchestrator-workflow/
+│       │   ├── SKILL.md          # Skill 总入口
+│       │   ├── phases/           # Phase 流程文件（00-03, 07）
+│       │   ├── specs/            # 子 Agent 规范（04-coder, 05-reviewer）
+│       │   ├── sync/             # 进度同步（06）
+│       │   └── references/       # 标准规范（CODE / RELEASE / CI / README）
+│       ├── commands/             # plan.md / audit.md / tag.md
+│       └── assets/templates/     # 目标项目文档模板（7 个）
 └── README.md
 ```
 

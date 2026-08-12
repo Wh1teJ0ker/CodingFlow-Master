@@ -61,17 +61,21 @@ Phase 8  [Only on explicit /tag] Release QA → qa_passed → tag + release.md
 
 ```
 CodingFlow-Master/
-├── .zcode-plugin/plugin.json     # Plugin manifest
-├── agents/                       # Sub-agent definitions (coder.md / reviewer.md)
-├── hooks/                        # hooks.json + scripts/ (4 hook scripts)
-├── skills/orchestrator-workflow/
-│   ├── SKILL.md                  # Skill entry point
-│   ├── phases/                   # Phase process files (00-03, 07)
-│   ├── specs/                    # Sub-agent specs (04-coder, 05-reviewer)
-│   ├── sync/                     # Progress sync (06)
-│   └── references/               # Standards (CODE / RELEASE / CI / README)
-├── commands/                     # plan.md / audit.md / tag.md
-├── assets/templates/             # Target project doc templates (7 files)
+├── marketplace.json              # Plugin marketplace manifest
+├── plugins/
+│   └── codingflow-master/
+│       ├── .zcode-plugin/
+│       │   └── plugin.json       # Plugin manifest
+│       ├── agents/               # Sub-agent definitions (coder.md / reviewer.md)
+│       ├── hooks/                # hooks.json + scripts/ (4 hook scripts)
+│       ├── skills/orchestrator-workflow/
+│       │   ├── SKILL.md          # Skill entry point
+│       │   ├── phases/           # Phase process files (00-03, 07)
+│       │   ├── specs/            # Sub-agent specs (04-coder, 05-reviewer)
+│       │   ├── sync/             # Progress sync (06)
+│       │   └── references/       # Standards (CODE / RELEASE / CI / README)
+│       ├── commands/             # plan.md / audit.md / tag.md
+│       └── assets/templates/     # Target project doc templates (7 files)
 └── README.md
 ```
 
