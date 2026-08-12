@@ -1,0 +1,39 @@
+# {{PROJECT_NAME}} {{VERSION}}
+
+> 发布日期：YYYY-MM-DD
+> QA 报告：[QA-审计报告.md](../../qa/versions/{{VERSION}}/QA-审计报告.md)
+
+## Update
+
+- 新功能 1：简述功能及其关键实现要点
+- 新功能 2：简述功能及其关键实现要点
+
+## Fix
+
+- 修复 1：简述问题根因和修复方式
+- 修复 2：简述问题根因和修复方式
+
+## Downloads
+
+| 平台 | 文件 |
+|------|------|
+| {{PLATFORM_1}} | {{PROJECT_NAME}}_{{VERSION_NUM}}_{{PLATFORM_1}}.{{EXT_1}} |
+| {{PLATFORM_2}} | {{PROJECT_NAME}}_{{VERSION_NUM}}_{{PLATFORM_2}}.{{EXT_2}} |
+
+> 按实际构建产物填写，不涉及的平台删除对应行。如启用签名，附签名文件。
+
+## 校验和
+
+见 [checksums.txt](链接)
+
+## 升级
+
+- 从旧版本升级的注意事项和迁移指南（如适用）
+- 数据迁移：schema 版本变化、兼容性说明
+- 配置变更：新增 / 废弃的配置项
+
+## 已知问题
+
+- 已知但未阻塞发布的问题列表（如适用）
+
+> 完整技术文档见 `docs/versions/{{VERSION_NUM}}/`。

@@ -17,3 +17,7 @@ node_modules/
 # Local handoff workspace snapshots (execution-time, not tracked)
 handoff/*
 !handoff/.gitkeep
+
+# Local agent/session state (not tracked)
+.zcode/
+.mimosa/

@@ -1,48 +1,81 @@
-# Orchestrator Workflow Maintenance Guide
+# CodingFlow-Master
 
 [中文](./README.md)
 
-This directory maintains a collaboration workflow for the primary session, Coders, Reviewers, and Release QA. This document covers maintenance entry points, content layers, and change constraints only. The executable rules remain in `SKILL.md` and the process files it references.
+> ZCode orchestrator workflow plugin — Hooks + Commands + Skills three-layer architecture with machine-enforced gates.
 
-## Content layers
+<p align="center">
+  <img src="https://img.shields.io/badge/ZCode-Plugin-blue?style=flat" alt="ZCode Plugin"> <img src="https://img.shields.io/badge/version-2.0.0-blue?style=flat" alt="v2.0.0"> <img src="https://img.shields.io/badge/License-MIT-green?style=flat" alt="MIT">
+</p>
 
-README-related material in this directory has three distinct layers:
+---
 
-1. **Maintenance guides**: `README.md` and `README_EN.md`
-   - Written for contributors who maintain this skill.
-   - Identify the standard, templates, and maintenance checks.
-   - Do not replace `SKILL.md` or serve as a project-specific example.
-2. **Project README standard**: `references/README-STANDARD.md`
-   - Defines required structure, bilingual links, status language, and quality requirements for target-project READMEs.
-   - Serves as the shared review baseline.
-3. **Copyable templates**: `assets/project-templates/README.md.template` and `assets/project-templates/README_EN.md.template`
-   - Provide the Chinese primary template and its English counterpart.
-   - Use generic placeholders only and contain no project identity.
-   - After copying them into a target project, replace every placeholder and remove optional guidance that does not apply.
+## Overview
+
+- **Three-layer enforcement**: Hooks (machine interception) → Commands (user-triggered) → Skills (agent guidance). Critical gates cannot be bypassed.
+- **Orchestration loop**: Decompose requirements into DAG → dispatch coder → dispatch reviewer → main session accepts → E2E → commit.
+- **Version gate**: Tagging is only triggered by explicit user command, and must pass Release QA audit first.
+- **Tech-stack-agnostic**: Code standards are universal, not tied to specific frameworks or languages.
+
+## Architecture
+
+| Layer | Mechanism | Enforcement |
+|---|---|---|
+| **Hooks** | 4 scripts: state injection / tag intent detection / commit+tag gate / continuation check | Machine-enforced |
+| **Commands** | `/plan` `/audit` `/tag` | User-triggered |
+| **Skills** | SKILL.md + phases / specs / sync / references | Passive guidance |
+
+Core hook interceptions: `git tag` requires a `qa_passed` QA report; `git commit` must follow Conventional Commits; tag format is strictly `vX.Y.Z`.
+
+## Installation
+
+```bash
+git clone https://github.com/Wh1teJ0ker/CodingFlow-Master.git ~/.zcode/cli/plugins/codingflow-master
+bash ~/.zcode/cli/plugins/codingflow-master/scripts/setup.sh
+```
+
+`setup.sh` syncs skill files to `~/.agents/skills/orchestrator-workflow/` and installs coder / reviewer sub-agent definitions to `~/.zcode/agents/`. Idempotent, safe to re-run.
 
 ## Usage
 
-1. Read [`references/README-STANDARD.md`](./references/README-STANDARD.md) and establish the project's real status, audience, and distribution method.
-2. Copy the Chinese template to `README.md` in the target-project root.
-3. Copy the English template to `README_EN.md` in the target-project root.
-4. Fill both versions together, keeping headings, facts, commands, and links aligned.
-5. Verify the language links at the top of each file.
-6. Run each installation, verification, and build command before documenting it. Mark unverified or unreleased capabilities explicitly.
+| Command | Purpose |
+|---|---|
+| `/plan <goal>` | Start workflow: empty repo → plan docs/; non-empty → audit + normalize → decompose tasks → execute → E2E → commit |
+| `/audit` | Project audit: audit structure → build or normalize `docs/`, no task decomposition |
+| `/tag vX.Y.Z` | Explicit tag: triggers Release QA → pass then tag + release.md, fail then output defect list |
 
-## Maintenance principles
+## Workflow
 
-- Chinese `README.md` is the target project's primary README; English `README_EN.md` is its corresponding translation. They must link to each other.
-- The standard defines what must be true, the templates provide a starting structure, and a project instance records current facts.
-- Templates must not imply that features, build artifacts, or release channels are already available.
-- Commands must remain replaceable. Never place local usernames, absolute paths, repository identities, or credentials in a template.
-- Add, remove, and reorder sections in both language templates together.
-- Disclose privacy, security, limitations, and platform differences directly instead of replacing facts with marketing language.
+```
+Phase 0  Repo state detection (empty → plan docs/; non-empty → audit + normalize)
+Phase 1  Decompose task DAG → write TASK-BOARD + HANDOFF
+Phase 2  Dispatch coder → in_progress
+Phase 3  Coder reports → read REPORT
+Phase 4  Dispatch reviewer → read REVIEW → pass / reject
+Phase 5  Main session judges verified_complete → delete handoff trio
+Phase 6  Repeat 2-5 until all tasks pass
+Phase 7  E2E acceptance → auto commit (no tag) → stop
+Phase 8  [Only on explicit /tag] Release QA → qa_passed → tag + release.md
+```
 
-## Maintenance checklist
+## Directory Structure
 
-- [ ] `README.md` and `README_EN.md` have valid reciprocal language links.
-- [ ] The standard covers project overview, current status, Quick Start, basic verification, and essential links.
-- [ ] The two templates have matching sections.
-- [ ] Templates use generic placeholders only.
-- [ ] Quick Start commands are reproducible in a clean environment; release and download links are real.
-- [ ] Bilingual facts are consistent; no credentials, private addresses, or external project identities are present.
+```
+CodingFlow-Master/
+├── .zcode-plugin/plugin.json     # Plugin manifest
+├── agents/                       # Sub-agent definitions (coder.md / reviewer.md)
+├── hooks/                        # hooks.json + scripts/ (4 hook scripts)
+├── skills/orchestrator-workflow/
+│   ├── SKILL.md                  # Skill entry point
+│   ├── phases/                   # Phase process files (00-03, 07)
+│   ├── specs/                    # Sub-agent specs (04-coder, 05-reviewer)
+│   ├── sync/                     # Progress sync (06)
+│   └── references/               # Standards (CODE / RELEASE / CI / README)
+├── commands/                     # plan.md / audit.md / tag.md
+├── assets/templates/             # Target project doc templates (7 files)
+└── scripts/setup.sh             # Sub-agent auto-configure script
+```
+
+## License
+
+MIT
