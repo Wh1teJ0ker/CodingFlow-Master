@@ -67,9 +67,17 @@ if printf '%s' "$cmd" | grep -qE 'git[[:space:]]+tag[[:space:]]+'; then
             deny_reason="版本号 ${version} 不符合 SemVer 格式。必须为 vX.Y.Z（如 v1.0.0）。"
         else
             # Check QA report exists
-            qa_report="$cwd/docs/qa/versions/$version/QA-审计报告.md"
-            if [ ! -f "$qa_report" ]; then
-                deny_reason="版本 ${version} 的 QA 审计报告不存在（${qa_report}）。必须先通过 Release QA 审计并生成 QA 报告且结论为 qa_passed 后才能 tag。请使用 /tag ${version} 命令触发完整流程。"
+            # Try both with and without 'v' prefix (e.g. v1.1.5 and 1.1.5)
+            ver_num="${version#v}"
+            qa_report_v="$cwd/docs/qa/versions/$version/QA-审计报告.md"
+            qa_report_num="$cwd/docs/qa/versions/$ver_num/QA-审计报告.md"
+
+            if [ -f "$qa_report_v" ]; then
+                qa_report="$qa_report_v"
+            elif [ -f "$qa_report_num" ]; then
+                qa_report="$qa_report_num"
+            else
+                deny_reason="版本 ${version} 的 QA 审计报告不存在（尝试路径: docs/qa/versions/${version}/ 和 docs/qa/versions/${ver_num}/）。必须先通过 Release QA 审计并生成 QA 报告且结论为 qa_passed 后才能 tag。请使用 /tag ${version} 命令触发完整流程。"
             else
                 # Check QA report conclusion is qa_passed
                 conclusion=$(python3 -c "
