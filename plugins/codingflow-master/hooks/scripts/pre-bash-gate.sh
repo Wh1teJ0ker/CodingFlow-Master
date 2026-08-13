@@ -5,6 +5,7 @@
 #   a) Version format doesn't match ^v[0-9]+\.[0-9]+\.[0-9]+$ (no rc/beta/alpha suffix)
 #   b) docs/qa/versions/<ver>/QA-审计报告.md doesn't exist
 #   c) QA report conclusion is not qa_passed
+#   d) docs/versions/<ver>/release.md doesn't exist (release doc must be generated before tag)
 #
 # Gate 2 (git commit): Block if commit message doesn't follow Conventional Commits
 #   format: type(scope): subject  (type must be one of the standard types)
@@ -65,7 +66,7 @@ if printf '%s' "$cmd" | grep -qE 'git[[:space:]]+tag[[:space:]]+'; then
         # Check version format strictly: ^v[0-9]+\.[0-9]+\.[0-9]+$
         if ! printf '%s' "$version" | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
             deny_reason="版本号 ${version} 不符合 SemVer 格式。必须为 vX.Y.Z（如 v1.0.0）。"
-        else
+else
             # Check QA report exists
             # Try both with and without 'v' prefix (e.g. v1.1.5 and 1.1.5)
             ver_num="${version#v}"
@@ -78,20 +79,20 @@ if printf '%s' "$cmd" | grep -qE 'git[[:space:]]+tag[[:space:]]+'; then
                 qa_report="$qa_report_num"
             else
                 deny_reason="版本 ${version} 的 QA 审计报告不存在（尝试路径: docs/qa/versions/${version}/ 和 docs/qa/versions/${ver_num}/）。必须先通过 Release QA 审计并生成 QA 报告且结论为 qa_passed 后才能 tag。请使用 /tag ${version} 命令触发完整流程。"
-            else
+            fi
+
+            # Only check conclusion and release.md if QA report was found
+            if [ -f "$qa_report" ]; then
                 # Check QA report conclusion is qa_passed
                 conclusion=$(python3 -c "
 try:
     with open('$qa_report', 'r') as f:
         content = f.read()
-    # Look for conclusion field
     import re
-    # Try YAML frontmatter style
     m = re.search(r'审计结论\s*[:：]\s*(\S+)', content)
     if m:
         print(m.group(1).strip())
     else:
-        # Try other patterns
         m = re.search(r'qa_passed|qa_failed|blocked', content)
         if m:
             print(m.group(0))
@@ -103,6 +104,13 @@ except:
 
                 if [ "$conclusion" != "qa_passed" ]; then
                     deny_reason="版本 ${version} 的 QA 审计报告结论为 '${conclusion}'，不是 qa_passed。不允许 tag。请先修复 QA 审计发现的问题并重新审计。"
+                else
+                    # Check release.md exists
+                    release_md_v="$cwd/docs/versions/$version/release.md"
+                    release_md_num="$cwd/docs/versions/$ver_num/release.md"
+                    if [ ! -f "$release_md_v" ] && [ ! -f "$release_md_num" ]; then
+                        deny_reason="版本 ${version} 的发布文档 release.md 不存在（尝试路径: docs/versions/${version}/release.md 和 docs/versions/${ver_num}/release.md）。Release QA 通过后必须先执行生成 release.md 的步骤，才能 tag。"
+                    fi
                 fi
             fi
         fi

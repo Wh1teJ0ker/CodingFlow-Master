@@ -157,11 +157,13 @@ docs/
 
 ## 审计结论后的闭环
 
-### qa_passed → 执行 tag + 生成 release.md
+### qa_passed → 生成 release.md + 执行 tag
+
+**执行顺序强制：先生成 release.md，再 tag。**（`pre-bash-gate.sh` 检查 `docs/versions/<ver>/release.md` 存在后才放行 `git tag`。）
 
 1. 将 QA 报告结论写入 `docs/qa/versions/<ver>/QA-审计报告.md`（`审计结论: qa_passed`）
-2. 执行 `git tag vX.Y.Z`（此时 `pre-bash-gate.sh` 检查 QA 报告存在且 `qa_passed`，放行）
-3. 生成 `docs/versions/<ver>/release.md`（从 `../../assets/templates/release.md.template` 复制并填充 What's New / Fixed / Downloads）
+2. **生成 `docs/versions/<ver>/release.md`**（从 `../../assets/templates/release.md.template` 复制并填充 What's New / Fixed / Downloads）
+3. 执行 `git tag vX.Y.Z`（此时 `pre-bash-gate.sh` 检查 QA 报告存在且 `qa_passed`，且 release.md 已存在，放行）
 4. 按 [`06-progress-sync.md`](../sync/06-progress-sync.md) 执行版本级完成 / 发布状态同步：
    - 更新 `docs/versions/<ver>/更新日志.md` 顶部状态为 `已发布`，验收记录指向 QA 报告路径
    - 更新 `docs/04-版本标准.md` 对应版本状态

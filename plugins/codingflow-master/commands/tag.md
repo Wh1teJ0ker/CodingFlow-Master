@@ -32,7 +32,7 @@ description: "显式 tag 命令：触发 Phase 8 Release QA 审计 + git tag"
    - 生成 `docs/qa/versions/<version>/QA-审计报告.md`
 
 4. **判定**：
-   - `qa_passed` → 执行 `git tag <version>` → 生成 `docs/versions/<version>/release.md` → 同步版本状态
+   - `qa_passed` → **先生成 `docs/versions/<version>/release.md`** → 再执行 `git tag <version>` → 同步版本状态
    - `qa_failed` → 不 tag，将问题拆成修复任务，回到开发闭环
    - `blocked` → 不 tag，向用户报告缺失输入
 
