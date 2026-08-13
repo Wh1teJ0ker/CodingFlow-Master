@@ -6,6 +6,7 @@
 #   b) docs/qa/versions/<ver>/QA-审计报告.md doesn't exist
 #   c) QA report conclusion is not qa_passed
 #   d) docs/versions/<ver>/release.md doesn't exist (release doc must be generated before tag)
+#   e) handoff/ still contains task files (TASK-BOARD.md / TASK-*.md) — must clean before tag
 #
 # Gate 2 (git commit): Block if commit message doesn't follow Conventional Commits
 #   format: type(scope): subject  (type must be one of the standard types)
@@ -53,7 +54,21 @@ fi
 deny_reason=""
 
 # ── Gate 1: git tag ──────────────────────────────────────────────
-if printf '%s' "$cmd" | grep -qE 'git[[:space:]]+tag[[:space:]]+'; then
+# Detect 'git tag' as an actual command, not inside quoted strings (e.g. commit -m "...git tag...")
+is_git_tag=$(printf '%s' "$cmd" | python3 -c "
+import sys, re
+cmd = sys.stdin.read()
+# Strip quoted strings so 'git tag' inside a commit message won't match
+cleaned = re.sub(r'\"[^\"]*\"', '\"\"', cmd)
+cleaned = re.sub(r\"'[^']*'\", \"''\", cleaned)
+# Match 'git tag' at start or after a shell connector
+if re.search(r'(^|[;&|]\s*|&&\s*|||\s*)git\s+tag(\s|$)', cleaned):
+    print('yes')
+else:
+    print('no')
+" 2>/dev/null || echo "no")
+
+if [ "$is_git_tag" = "yes" ]; then
     # Extract version number from git tag command
     # Matches: git tag v1.0.0, git tag -a v1.0.0 -m "...", git tag v1.0.0 -m "..."
     version=$(printf '%s' "$cmd" | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+[a-zA-Z0-9.-]*' | head -1 || echo "")
@@ -66,12 +81,13 @@ if printf '%s' "$cmd" | grep -qE 'git[[:space:]]+tag[[:space:]]+'; then
         # Check version format strictly: ^v[0-9]+\.[0-9]+\.[0-9]+$
         if ! printf '%s' "$version" | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
             deny_reason="版本号 ${version} 不符合 SemVer 格式。必须为 vX.Y.Z（如 v1.0.0）。"
-else
+        else
             # Check QA report exists
             # Try both with and without 'v' prefix (e.g. v1.1.5 and 1.1.5)
             ver_num="${version#v}"
             qa_report_v="$cwd/docs/qa/versions/$version/QA-审计报告.md"
             qa_report_num="$cwd/docs/qa/versions/$ver_num/QA-审计报告.md"
+            qa_report=""
 
             if [ -f "$qa_report_v" ]; then
                 qa_report="$qa_report_v"
@@ -110,6 +126,17 @@ except:
                     release_md_num="$cwd/docs/versions/$ver_num/release.md"
                     if [ ! -f "$release_md_v" ] && [ ! -f "$release_md_num" ]; then
                         deny_reason="版本 ${version} 的发布文档 release.md 不存在（尝试路径: docs/versions/${version}/release.md 和 docs/versions/${ver_num}/release.md）。Release QA 通过后必须先执行生成 release.md 的步骤，才能 tag。"
+                    else
+                        # Check handoff/ is clean (no task files)
+                        handoff_dir="$cwd/handoff"
+                        if [ -d "$handoff_dir" ]; then
+                            task_files=$(find "$handoff_dir" -maxdepth 1 -type f \( -name 'TASK-BOARD.md' -o -name 'TASK-*.md' \) 2>/dev/null || true)
+                            if [ -n "$task_files" ]; then
+                                deny_reason="handoff/ 目录仍包含临时任务文件，必须在 tag 前清理。残留文件：
+$task_files
+请先删除 handoff/ 下的 TASK-BOARD.md / TASK-*.md，再执行 git tag。"
+                            fi
+                        fi
                     fi
                 fi
             fi

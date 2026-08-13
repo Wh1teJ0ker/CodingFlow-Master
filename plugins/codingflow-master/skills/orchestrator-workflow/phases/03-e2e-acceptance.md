@@ -36,7 +36,7 @@ e2e_verification:
   2. **自动 commit**（Conventional Commits 格式，如 `feat: complete <version> milestone tasks` 或更具体的 scope 描述）
   3. commit 后**停下**。不自动 tag，不自动进入 Release QA。
   4. 向用户报告：所有任务已完成，E2E 验收通过，已自动 commit。如需发布版本，请显式指令 `/tag vX.Y.Z`。
-  5. 注意：`done_e2e` 只表示集成验收通过。**不允许直接删除 `TASK-BOARD.md` 或把版本标为已发布**。`TASK-BOARD.md` 保留到 Phase 8 Release QA 通过且版本状态同步后再删除。
+  5. 注意：`done_e2e` 只表示集成验收通过。**不允许直接删除 `TASK-BOARD.md` 或把版本标为已发布**。`TASK-BOARD.md` 保留到 Phase 8 Release QA `qa_passed` 后，在 tag 前清理。
 
 - **有失败** → 定位是哪个任务的集成缺陷，开新 HANDOFF（新任务 id，`depends_on` 涉及的任务）回 Phase 2
   - 集成缺陷不是单任务验收能发现的跨任务问题，必须开新任务修

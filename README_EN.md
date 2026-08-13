@@ -5,7 +5,7 @@
 > ZCode orchestrator workflow plugin — Hooks + Commands + Skills three-layer architecture with machine-enforced gates.
 
 <p align="center">
-  <img src="https://img.shields.io/badge/ZCode-Plugin-blue?style=flat" alt="ZCode Plugin"> <img src="https://img.shields.io/badge/version-2.1.0-blue?style=flat" alt="v2.1.0"> <img src="https://img.shields.io/badge/License-MIT-green?style=flat" alt="MIT">
+  <img src="https://img.shields.io/badge/ZCode-Plugin-blue?style=flat" alt="ZCode Plugin"> <img src="https://img.shields.io/badge/version-2.1.1-blue?style=flat" alt="v2.1.1"> <img src="https://img.shields.io/badge/License-MIT-green?style=flat" alt="MIT">
 </p>
 
 ---

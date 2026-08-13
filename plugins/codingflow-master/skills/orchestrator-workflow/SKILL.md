@@ -141,9 +141,9 @@ handoff/                                 # 临时交接文件：只服务当前�
 
 文档状态口径：
 - `docs/` 是正式产品文档源，必须与真实代码/实现/验收状态一致，不能提前写成"已完成/已发布"。
-- `docs/versions/<ver>/release.md` 在 tag 后生成，包含 What's New / Fixed / Downloads；tag 前不创建。
+- `docs/versions/<ver>/release.md` 在 tag 前生成，包含 What's New / Fixed / Downloads；`pre-bash-gate.sh` 检查其存在后才放行 tag。
 - `docs/qa/versions/<ver>/QA-审计报告.md` 是版本级发布门禁文档，只有结论为 `qa_passed` 才允许 tag。
-- `handoff/` 三件套在任务 `verified_complete` 后删除；`TASK-BOARD.md` 在 `qa_passed` 且版本状态同步后删除。
+- `handoff/` 三件套在任务 `verified_complete` 后删除；`TASK-BOARD.md` 及所有 `TASK-*.md` 在 `qa_passed` 后、tag 前清理；`pre-bash-gate.sh` 检查 `handoff/` 无残留后才放行 tag。
 
 ## 端到端流程总览
 
@@ -163,7 +163,7 @@ Phase 7  端到端集成验收 → done_e2e（不等于发布）                
          ── 停。不自动 tag。──
 Phase 8  【仅当用户显式指令 /tag vX.X.Z 或明确说"tag vX.X.Z"】
          → Release QA 审计 → 生成 QA 报告 → qa_passed / qa_failed              [详见 07]
-         → qa_passed → git tag + 生成 release.md → release_complete
+         → qa_passed → 清理 handoff/ + 生成 release.md + git tag → release_complete
          → qa_failed → 回流修复，不 tag
 ```
 
@@ -172,8 +172,8 @@ Phase 8  【仅当用户显式指令 /tag vX.X.Z 或明确说"tag vX.X.Z"】
 1. **新增 Phase 0**：仓库状态判断（空 → 规划文档；非空 → 审计+规范化）
 2. **Phase 7 后自动 commit 但不 tag**
 3. **Phase 8 改为显式指令触发**（`/tag` 命令或用户明确说 "tag vX.X.Z"）
-4. **新增 release.md**：版本发布文档（What's New / Fixed / Downloads）
-5. **Hook 强制门禁**：tag 格式 + QA 报告存在性 + commit message 格式由机器强制
+4. **新增 release.md**：版本发布文档（What's New / Fixed / Downloads），tag 前生成
+5. **Hook 强制门禁**：tag 格式 + QA 报告存在性 + release.md 存在性 + handoff/ 清理 + commit message 格式，全部由机器强制
 
 ## 触发示例
 
@@ -217,9 +217,9 @@ Phase 8  【仅当用户显式指令 /tag vX.X.Z 或明确说"tag vX.X.Z"】
 规则：
 - `docs/` 下的文档必须反映真实当前实现状态，不许比代码更乐观。
 - QA 报告按版本保存到 `docs/qa/versions/<ver>/QA-审计报告.md`，与 `docs/versions/<ver>/` 同步；tag 前必须存在且结论为 `qa_passed`。
-- `release.md` 在 tag 后生成到 `docs/versions/<ver>/release.md`，包含 What's New / Fixed / Downloads。
+- `release.md` 在 tag 前生成到 `docs/versions/<ver>/release.md`，包含 What's New / Fixed / Downloads；`pre-bash-gate.sh` 检查其存在后才放行 tag。
 - `handoff/` 下的文件是过程性交接工件，任务 `verified_complete` 后由主会话删除三件套。
-- `TASK-BOARD.md` 在 `done_e2e` 后保留到版本级 Release QA 通过；只有 `qa_passed` 且版本状态同步完成后才删除。
+- `TASK-BOARD.md` 及所有 `TASK-*.md` 在 `qa_passed` 后、tag 前清理；`pre-bash-gate.sh` 检查 `handoff/` 无残留后才放行 tag。
 
 ## 共享状态词
 
@@ -258,6 +258,6 @@ Phase 8  【仅当用户显式指令 /tag vX.X.Z 或明确说"tag vX.X.Z"】
 - reviewer 退回不等于失败，是正常闭环
 - 同一任务退回 ≥ 3 次要停下来反思 HANDOFF 本身
 - 子 Agent 只读/只写 `handoff/` 下约定文件，主会话不依赖对话历史做判定
-- **任务 verified_complete 后删除该任务 handoff 三件套**；`TASK-BOARD.md` 必须保留到 Release QA `qa_passed` 且版本状态同步完成后再删除
+- **任务 verified_complete 后删除该任务 handoff 三件套**；`TASK-BOARD.md` 及所有 `TASK-*.md` 必须在 Release QA `qa_passed` 后、tag 前清理（`pre-bash-gate.sh` 会拦截未清理的 tag）
 - `docs/` 是保存性文档，不删除；`handoff/` 是临时交接文件，验收后清理
 - **每次单任务完成、版本级 Release QA 通过时，必须跑进度同步**

@@ -116,7 +116,7 @@ README 按"轻量仓库入口文档"编写，重点写项目介绍、当前状�
 - `versions/<ver>/更新日志.md` 的进度表必须与 `handoff/TASK-BOARD.md` 的任务状态保持一致
 - 每个 `versions/<ver>/` 必须同步规划对应的 `qa/versions/<ver>/QA-审计报告.md`
 - 版本完成/发布状态只能在该 QA 报告已落盘且结论为 `qa_passed` 后写入
-- `release.md` 在版本 `qa_passed` 且用户显式指令 tag 后生成
+- `release.md` 在版本 `qa_passed` 后、tag 前生成
 
 详见 [`06-progress-sync.md`](../sync/06-progress-sync.md) 与 [`07-release-qa-audit.md`](./07-release-qa-audit.md)。
 

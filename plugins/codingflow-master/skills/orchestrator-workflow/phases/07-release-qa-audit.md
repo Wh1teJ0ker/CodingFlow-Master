@@ -46,7 +46,7 @@ docs/
 │       ├── 规划需求.md
 │       ├── 技术方案.md
 │       ├── 更新日志.md
-│       └── release.md               # qa_passed 且 tag 后生成
+│       └── release.md               # qa_passed 后、tag 前生成
 └── qa/
     └── versions/
         └── <ver>/
@@ -157,17 +157,17 @@ docs/
 
 ## 审计结论后的闭环
 
-### qa_passed → 生成 release.md + 执行 tag
+### qa_passed → 清理 handoff/ + 生成 release.md + 执行 tag
 
-**执行顺序强制：先生成 release.md，再 tag。**（`pre-bash-gate.sh` 检查 `docs/versions/<ver>/release.md` 存在后才放行 `git tag`。）
+**执行顺序强制：先清理 handoff/，再生成 release.md，最后 tag。**（`pre-bash-gate.sh` 检查 `handoff/` 无残留任务文件、`docs/versions/<ver>/release.md` 存在后才放行 `git tag`。）
 
 1. 将 QA 报告结论写入 `docs/qa/versions/<ver>/QA-审计报告.md`（`审计结论: qa_passed`）
-2. **生成 `docs/versions/<ver>/release.md`**（从 `../../assets/templates/release.md.template` 复制并填充 What's New / Fixed / Downloads）
-3. 执行 `git tag vX.Y.Z`（此时 `pre-bash-gate.sh` 检查 QA 报告存在且 `qa_passed`，且 release.md 已存在，放行）
-4. 按 [`06-progress-sync.md`](../sync/06-progress-sync.md) 执行版本级完成 / 发布状态同步：
+2. **清理 `handoff/` 临时任务文件**：删除 `handoff/TASK-BOARD.md`、`handoff/TASK-*.md`（HANDOFF / REPORT / REVIEW 全部删除）。tag 前必须清理，`pre-bash-gate.sh` 会拦截未清理的 tag。
+3. **生成 `docs/versions/<ver>/release.md`**（从 `../../assets/templates/release.md.template` 复制并填充 What's New / Fixed / Downloads）
+4. 执行 `git tag vX.Y.Z`（此时 `pre-bash-gate.sh` 检查 QA 报告存在且 `qa_passed`、handoff/ 已清理、release.md 已存在，放行）
+5. 按 [`06-progress-sync.md`](../sync/06-progress-sync.md) 执行版本级完成 / 发布状态同步：
    - 更新 `docs/versions/<ver>/更新日志.md` 顶部状态为 `已发布`，验收记录指向 QA 报告路径
    - 更新 `docs/04-版本标准.md` 对应版本状态
-5. 删除 `handoff/TASK-BOARD.md`（如存在）
 6. 标记版本状态为 `release_complete`
 
 ### qa_failed → 回流修复，不 tag
@@ -201,10 +201,11 @@ docs/
 **场景 C：用户指令 tag，E2E 通过，QA 全部通过**
 - 结果必须是 `qa_passed`。
 - `docs/qa/versions/<ver>/QA-审计报告.md` 必须存在并记录验证命令、审计矩阵和发布门禁结论。
+- **清理 `handoff/`**：删除 `handoff/TASK-BOARD.md` 及所有 `handoff/TASK-*.md`。
 - 执行 `git tag vX.Y.Z`（hook 放行）。
 - 生成 `docs/versions/<ver>/release.md`。
 - 按 [`06-progress-sync.md`](../sync/06-progress-sync.md) 同步版本完成 / 发布状态，并在更新日志验收记录中引用 QA 报告。
-- 版本状态同步完成后，删除 `handoff/TASK-BOARD.md`。
+- 版本状态标记为 `release_complete`。
 
 ## 禁止行为
 
@@ -213,6 +214,8 @@ docs/
 - 在未生成 `docs/qa/versions/<ver>/QA-审计报告.md` 时执行 `git tag`
 - 在 QA 报告结论不是 `qa_passed` 时执行 `git tag`
 - QA 失败时只记录问题但继续执行 tag
+- 在 `handoff/` 仍有任务文件残留时执行 `git tag`（`pre-bash-gate.sh` 会拦截）
 - 把 QA 报告只写在对话里或 `handoff/` 下
 - 文档写"已完成 / 已发布"，但 QA 报告结论不是 `qa_passed`
-- tag 后不生成 `release.md`
+- tag 前不生成 `release.md`
+- tag 前不清理 `handoff/`

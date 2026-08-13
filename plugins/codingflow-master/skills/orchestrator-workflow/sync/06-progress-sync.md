@@ -93,7 +93,7 @@
 1. 对比 handoff/TASK-BOARD.md 中各任务 status 与 docs/versions/*/更新日志.md 进度表
 2. 若 TASK-BOARD 显示 verified_complete 但更新日志显示待启动 → 需同步
 3. 若 handoff/ 下存在任务三件套但 TASK-BOARD 显示该任务 verified_complete → 需清理
-4. 若 handoff/ 下存在 TASK-BOARD.md 但所有任务已 verified_complete → 需继续做 e2e；若已 done_e2e 则已自动 commit，等待用户显式指令 tag 后才进入 Release QA；只有 QA 通过并同步版本状态后才清理
+4. 若 handoff/ 下存在 TASK-BOARD.md 但所有任务已 verified_complete → 需继续做 e2e；若已 done_e2e 则已自动 commit，等待用户显式指令 tag 后才进入 Release QA；QA `qa_passed` 后在 tag 前清理 handoff/（`pre-bash-gate.sh` 会拦截未清理的 tag）
 ```
 
 ## 禁止行为
