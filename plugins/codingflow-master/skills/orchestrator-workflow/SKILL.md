@@ -249,6 +249,7 @@ Phase 8  【仅当用户显式指令 /tag vX.X.Z 或明确说"tag vX.X.Z"】
 
 - 永远先拆任务 DAG，再分派
 - 任务粒度按"可独立验收的垂直切片"
+- **任务编号 `T<n>` 在版本作用域内从 `T1` 开始递增，不跨版本累加**：每个版本号是独立迭代周期，新版本编号从 T1 重置
 - commit 粒度按"单一逻辑目的"，使用 Conventional Commits：`type(scope): subject`
 - **不在用户显式指令 tag 前自动执行 Release QA 或创建 tag**
 - 没看到落盘 REPORT / REVIEW 文件就不下结论

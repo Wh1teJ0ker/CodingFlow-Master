@@ -24,7 +24,7 @@
 选 `ready`（`depends_on` 全部 `verified_complete`）的任务，派 coder 子 Agent，把对应任务文件作为唯一输入源。子 Agent 遵守 [`04-coder-spec.md`](../specs/04-coder-spec.md) 定义的 Coder 规范。
 
 调用输入：
-- `task_id`: `T<id>`
+- `task_id`: `T<id>`          # 版本内从 T1 递增，不跨版本累加（详见 01-task-decomposition.md "任务编号规则"）
 - `handoff`: `handoff/TASK-<id>-HANDOFF.md`
 - `expected_output`: `handoff/TASK-<id>-REPORT.md`
 - `mode`: `initial` 或 `rework`
@@ -51,7 +51,7 @@
 派 reviewer 子 Agent，把 HANDOFF 与 coder REPORT 作为唯一输入源。子 Agent 遵守 [`05-reviewer-spec.md`](../specs/05-reviewer-spec.md) 定义的 Reviewer 规范。
 
 调用输入：
-- `task_id`: `T<id>`
+- `task_id`: `T<id>`          # 版本内从 T1 递增，不跨版本累加
 - `handoff`: `handoff/TASK-<id>-HANDOFF.md`
 - `coder_report`: `handoff/TASK-<id>-REPORT.md`
 - `expected_output`: `handoff/TASK-<id>-REVIEW.md`
