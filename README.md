@@ -5,7 +5,7 @@
 > ZCode 编排工作流插件 — Hooks + Commands + Skills 三层架构，机器强制关键门禁不可绕过。
 
 <p align="center">
-  <img src="https://img.shields.io/badge/ZCode-Plugin-blue?style=flat" alt="ZCode Plugin"> <img src="https://img.shields.io/badge/version-2.1.1-blue?style=flat" alt="v2.1.1"> <img src="https://img.shields.io/badge/License-MIT-green?style=flat" alt="MIT">
+  <img src="https://img.shields.io/badge/ZCode-Plugin-blue?style=flat" alt="ZCode Plugin"> <img src="https://img.shields.io/badge/version-2.1.2-blue?style=flat" alt="v2.1.2"> <img src="https://img.shields.io/badge/License-MIT-green?style=flat" alt="MIT">
 </p>
 
 ---
