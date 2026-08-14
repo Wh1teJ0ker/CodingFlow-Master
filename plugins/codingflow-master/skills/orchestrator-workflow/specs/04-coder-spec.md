@@ -50,6 +50,7 @@ Coder 子 Agent 只负责「执行 + 自验 + 回报」，不负责审查 / 出�
 - 默认使用 Conventional Commits：`type(scope): subject`
 - 常用类型：`feat`、`fix`、`docs`、`refactor`、`test`、`ci`、`build`、`chore`
 - 不把无关格式化、无关重构、无关文档混入同一个 commit
+- **禁止在 commit message 中写任务编号 `T<数字>`**：任务编号是版本作用域内的内部编号，跨版本会重复，而 commit 历史是跨版本永久的。用语义描述代替 `T1`（`pre-bash-gate.sh` 会拦截含 `T<数字>` 的 message）
 
 **Step 5 — 同步文档**：
 - 如果真实行为 / 用法 / 工作流 / 当前限制发生变化，同步更新 `docs/` 下相关文档

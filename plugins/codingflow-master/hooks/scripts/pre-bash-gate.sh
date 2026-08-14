@@ -165,6 +165,13 @@ if msgs:
             # Standard types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert
             if ! printf '%s' "$messages" | grep -qE '^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?:[[:space:]]+.+'; then
                 deny_reason="git commit message 不符合 Conventional Commits 格式。必须为 'type(scope): subject' 或 'type: subject'。\n标准 type: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert\n当前 message: $messages"
+            else
+                # Block task ids (T<digits>) in commit messages
+                # Task ids are version-scoped internal numbers; commit history is cross-version permanent.
+                # Writing T1 in a commit creates ambiguity across versions.
+                if printf '%s' "$messages" | grep -qE '\bT[0-9]+\b'; then
+                    deny_reason="git commit message 包含任务编号 T<数字>（${messages}）。任务编号是版本作用域内的内部编号，跨版本会重复（v1.2.0 的 T1 与 v1.3.0 的 T1 是不同任务）。commit 历史是跨版本永久的，message 里写 T1 后续无法区分是哪个版本的任务。请移除 message 中的 T<数字>，用语义描述代替。"
+                fi
             fi
         fi
     fi

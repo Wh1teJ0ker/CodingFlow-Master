@@ -47,7 +47,7 @@
 1. **一个 commit 只做一个逻辑目的**：例如只做功能、只修 bug、只补文档、只做重构。
 2. **不要混入无关改动**：功能实现时不要顺手夹带大规模格式化、无关重命名、无关文档改写。
 3. **commit message 使用 Conventional Commits**：默认格式 `type(scope): subject`。
-4. **推荐与任务关联**：如果变更属于某个任务，可在 subject 或报告中关联 `T<id>`，但不强制把任务号塞进每条 message。
+4. **禁止在 commit message 中提及任务编号 `T<id>`**：任务编号是版本作用域内的内部编号，跨版本会重复（v1.2.0 的 T1 与 v1.3.0 的 T1 是不同任务）。commit 历史是跨版本永久的，如果 message 里写 `T1`，后续无法区分是哪个版本的 T1，造成歧义。`pre-bash-gate.sh` 会拦截包含 `T<数字>` 模式的 commit message。
 
 常用类型：`feat`、`fix`、`docs`、`refactor`、`test`、`ci`、`build`、`chore`。
 

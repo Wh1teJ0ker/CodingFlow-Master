@@ -23,7 +23,7 @@ description: 主会话用规划与调度规范。负责把用户需求拆成可�
 |---|---|---|---|
 | `session-start.sh` | SessionStart | 非阻断 | 注入当前工作流状态（TASK-BOARD + 版本状态） |
 | `prompt-submit.sh` | UserPromptSubmit | 非阻断 | 注入工作流提醒（tag/发布意图 → QA 门禁提示） |
-| `pre-bash-gate.sh` | PreToolUse(Bash) | 强制阻断 | `git tag` → 版本格式 + QA 报告存在且 qa_passed；`git commit` → Conventional Commits 格式 |
+| `pre-bash-gate.sh` | PreToolUse(Bash) | 强制阻断 | `git tag` → 版本格式 + QA 报告存在且 qa_passed + release.md 存在 + handoff/ 已清理；`git commit` → Conventional Commits 格式 + 禁止 T<数字> |
 | `stop-check.sh` | Stop | 可续行 | 未完成任务 → 请求续行（最多 3 次） |
 
 > Hook 是安全网：即使 Agent 试图绕过 skill 指导直接 `git tag`，hook 也会拦截。但 Hook 只检查机器可验证的条件（文件存在性、格式正则），语义级验收仍由 skill + reviewer 负责。
@@ -251,6 +251,7 @@ Phase 8  【仅当用户显式指令 /tag vX.X.Z 或明确说"tag vX.X.Z"】
 - 任务粒度按"可独立验收的垂直切片"
 - **任务编号 `T<n>` 在版本作用域内从 `T1` 开始递增，不跨版本累加**：每个版本号是独立迭代周期，新版本编号从 T1 重置
 - commit 粒度按"单一逻辑目的"，使用 Conventional Commits：`type(scope): subject`
+- **禁止在 commit message 中提及任务编号 `T<数字>`**：任务编号是版本作用域内的内部编号，跨版本会重复，而 commit 历史是跨版本永久的（`pre-bash-gate.sh` 会拦截含 `T<数字>` 的 message）
 - **不在用户显式指令 tag 前自动执行 Release QA 或创建 tag**
 - 没看到落盘 REPORT / REVIEW 文件就不下结论
 - `verified_complete` 最终判定权在本 skill
